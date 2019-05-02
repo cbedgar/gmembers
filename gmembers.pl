@@ -18,18 +18,15 @@ use strict; use warnings;
 $ENV{"PATH"} = "/usr/bin:/bin";
 
 # Only run on supported $os:
-my $os;
-($os)=(`uname -a` =~ /^([\w-]+)/);
+(my $os) = (`uname -a` =~ /^([\w-]+)/);
 $os =~ /Darwin/ or die "You need a mac!  Cannot run on $os\n";
 
-my $wantedgroup = shift;
-
-my %groupmembers;
+my %groupmembers = ();
+my $group_field_size = 0;
 
 # Acquire the list of @users
 my @users = `dscl . -ls /Users`;
 chop @users;
-;
 
 # Now just do what Zed did - thanks Zed.
 foreach my $userid (@users)
@@ -40,29 +37,27 @@ foreach my $userid (@users)
     foreach my $group (@grouplist)
     {
         $groupmembers{$group}->{$userid} = 1;
+        $group_field_size < length $group
+        	and $group_field_size = length $group;
     }
 }
 
-if($wantedgroup)
-{
-    print_group_members($wantedgroup);
-}
-else
-{
-    foreach my $group (sort keys %groupmembers)
-    {
-        print "Group ",$group," has the following members:\n";
-        print_group_members($group);
-        print "\n";
-    }
+my @wantedgroups = @ARGV ? @ARGV : sort keys %groupmembers;
+	# look at specified groups if they exist, else look at all groups
+
+my @groups_with_one;	# place groups with only a single user in them at the end
+my @groups_with_many;	# put the groups with multiple users at the front
+foreach my $group (@wantedgroups) {
+	if ( keys %{$groupmembers{$group}} == 1) {
+		push @groups_with_one, $group;
+	}
+	else {
+		push @groups_with_many, $group;
+	}
 }
 
-sub print_group_members
-{
-    my ($group) = @_;
-    return unless $group;
-
-    foreach my $member (sort keys %{$groupmembers{$group}})
-    	{	print $member, " " }
-    print "\n";
+foreach my $group ( @groups_with_many, @groups_with_one ) {
+#    	print "DEBUG: \$group_field_size = $group_field_size\n";
+	printf( '%*s  :  ', -$group_field_size, $group );
+	print( join( ' ', sort keys %{$groupmembers{$group}}), "\n");
 }
