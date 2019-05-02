@@ -20,25 +20,16 @@ $ENV{"PATH"} = "/usr/bin:/bin";
 # Only run on supported $os:
 my $os;
 ($os)=(`uname -a` =~ /^([\w-]+)/);
-unless ($os =~ /(HU-UX|SunOS|Linux|Darwin)/)
-    {die "\$getent or equiv. does not exist:  Cannot run on $os\n";}
+$os =~ /Darwin/ or die "You need a mac!  Cannot run on $os\n";
 
 my $wantedgroup = shift;
 
 my %groupmembers;
 
-my @users;
-
-# Acquire the list of @users based on what is available on this OS:
-if ($os =~ /(SunOS|Linux|HP-UX)/) {
-    #HP-UX & Solaris assumed to be like Linux; they have not been tested.
-    my $usertext = `getent passwd`;
-    @users = $usertext =~ /^([a-zA-Z0-9_-]+):/gm;
-};
-if ($os =~ /Darwin/) {
-    @users = `dscl . -ls /Users`;
-    chop @users;
-}
+# Acquire the list of @users
+my @users = `dscl . -ls /Users`;
+chop @users;
+;
 
 # Now just do what Zed did - thanks Zed.
 foreach my $userid (@users)
@@ -72,7 +63,6 @@ sub print_group_members
     return unless $group;
 
     foreach my $member (sort keys %{$groupmembers{$group}})
-    {
-        print $member,"\n";
-    }
+    	{	print $member, " " }
+    print "\n";
 }
