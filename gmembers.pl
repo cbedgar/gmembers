@@ -3,19 +3,9 @@
 # List all members of one or more unix groups, all groups or optionally just
 # the group specified on the command line
 #
-# Date:         12/30/2013
-# Author:       William H. McCloskey, Jr.
-# Changes:      Added logic to detect host type & tailor subset of getent (OSX)
-# Attribution:
-#   The logic for this script was directly lifted from Zed Pobre's work.
-#     See below for Copyright notice.
-#   The idea to use dscl to emulate a subset of the now defunct getent on OSX
-#     came from
-#       http://zzamboni.org/\
-#         brt/2008/01/21/how-to-emulate-unix-getent-with-macosxs-dscl/
-#     with an example implementation lifted from
-#       https://github.com/petere/getent-osx/blob/master/getent
+#	MIT License, see LICENSE file included with project
 #
+# Copyright © 2013 William H. McCloskey, Jr., © 2019 Clement B. Edgar III
 # Copyright © 2010-2013 by Zed Pobre (zed@debian.org or zed@resonant.org)
 #
 # Permission to use, copy, modify, and/or distribute this software for any
